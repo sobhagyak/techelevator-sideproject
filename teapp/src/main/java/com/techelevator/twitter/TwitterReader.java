@@ -32,45 +32,14 @@ public class TwitterReader {
 
     }
 
-    public void startTwitterReader() {
-        StatusListener statusListener = new StatusListener() {
-            @Override
-            public void onStatus(Status status) {
-                System.out.println(status.getUser().getName() + " : " + status.getText());
-            }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int i) {
-
-            }
-
-            @Override
-            public void onScrubGeo(long l, long l1) {
-
-            }
-
-            @Override
-            public void onStallWarning(StallWarning stallWarning) {
-
-            }
-
-            @Override
-            public void onException(Exception e) {
-
-            }
-        };
-
+    public void startTwitterReader(StatusListener statusListener) {
         twitterStream.addListener(statusListener);
         twitterStream.filter(searchQuery);
     }
 
     public static void main(String[] args) {
         TwitterReader twitterReader = new TwitterReader();
-        twitterReader.startTwitterReader();
+        TwitterStatusListener twitterStatusListener = new TwitterStatusListener();
+        twitterReader.startTwitterReader(twitterStatusListener);
     }
 }

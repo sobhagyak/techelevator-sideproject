@@ -1,20 +1,21 @@
 package com.techelevator.model;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class PublishedMessage {
 
     private String resource;
     private String message;
-    private String messsageId;
+    private Long messsageId;
     private String username; // user screen name in twitter
     private String hashtag;
-    private Timestamp postDate;
+    private Date postDate;
     private int favoriteCount;
     private int retweetCount;
 
-    public PublishedMessage(String resource, String message, String messsageId, String username,
-                            String hashtag, Timestamp postDate, int favoriteCount, int retweetCount) {
+    public PublishedMessage(String resource, String message, Long messsageId, String username,
+                            String hashtag, Date postDate, int favoriteCount, int retweetCount) {
         this.resource = resource;
         this.message = message;
         this.messsageId = messsageId;
@@ -33,7 +34,7 @@ public class PublishedMessage {
         return message;
     }
 
-    public String getMesssageId() {
+    public Long getMesssageId() {
         return messsageId;
     }
 
@@ -45,7 +46,7 @@ public class PublishedMessage {
         return hashtag;
     }
 
-    public Timestamp getPostDate() {
+    public Date getPostDate() {
         return postDate;
     }
 
@@ -55,5 +56,14 @@ public class PublishedMessage {
 
     public int getRetweetCount() {
         return retweetCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Resource: "+this.resource +
+        "\nStatus: " + this.getMessage() + "\nStatus Id: " + this.getMesssageId() +
+        "\nUser: " + this.getUsername() + "\nHashtags" + this.getHashtag() +
+        "\nCreated Time: " + this.getPostDate() + "\nFavorite Count: " + this.getFavoriteCount() +
+                "\nRetweet Count: " + this.getRetweetCount();
     }
 }
