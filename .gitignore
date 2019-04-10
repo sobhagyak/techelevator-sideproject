@@ -67,3 +67,5 @@ yarn-error.log*
 
 # Sobe Notes
 Documentation/
+teapp/src/main/resources/twilioConfig.properties
+teapp/src/main/resources/twitterConfig.properties

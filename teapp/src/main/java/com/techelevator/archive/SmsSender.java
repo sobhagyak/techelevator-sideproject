@@ -4,14 +4,18 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class SmsSender {
     // Find your Account Sid and Auth Token at twilio.com/console
-    public static final String ACCOUNT_SID =
-            "ACca2793870222a66ee41013795f8448a9";
-    public static final String AUTH_TOKEN =
-            "7871319fe18769f74bedfaec0334a110";
+    public static String ACCOUNT_SID;
+    public static String AUTH_TOKEN;
 
     public static void sendMessage(String msg, String phone) {
+        loadProperties();
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Message message = Message
@@ -21,6 +25,30 @@ public class SmsSender {
                 .create();
 
         System.out.println(msg);
+    }
+
+    private static void loadProperties() {
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+            input = new FileInputStream("teapp\\src\\main\\resources\\twilioConfig.properties");
+            prop.load(input);
+
+            ACCOUNT_SID=prop.getProperty("ACCOUNT_SID");
+            AUTH_TOKEN=prop.getProperty("AUTH_TOKEN");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
 
