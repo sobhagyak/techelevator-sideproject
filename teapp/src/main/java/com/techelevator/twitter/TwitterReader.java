@@ -9,7 +9,7 @@ import twitter4j.*;
 public class TwitterReader {
 
     private static final Log LOG = LogFactory.getLog(TwitterReader.class);
-    private static final String DEFAULT_QUERY = "ChaseBank";
+    private static final String DEFAULT_QUERY = "SobeTestingStuff";
     private static final String DEFAULT_LANGUAGE = "en";
 
     private TwitterStream twitterStream;
@@ -37,9 +37,4 @@ public class TwitterReader {
         twitterStream.filter(searchQuery);
     }
 
-    public static void main(String[] args) {
-        TwitterReader twitterReader = new TwitterReader();
-        TwitterStatusListener twitterStatusListener = new TwitterStatusListener();
-        twitterReader.startTwitterReader(twitterStatusListener);
-    }
 }

@@ -3,7 +3,6 @@ package com.techelevator.dao;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.kinesis.AmazonKinesis;
-import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
@@ -14,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 public class KinesisMessagePersister implements MessagePersister<PublishedMessage> {
@@ -31,28 +29,19 @@ public class KinesisMessagePersister implements MessagePersister<PublishedMessag
     // gets a twitter message and persists it on kinesis
     public void persist(PublishedMessage message) {
 
-        // validate message fields
-        if (!validateMessage(message)) {
-            return;
-        }
+        // validate message fields - nahhhhh
 
         PutRecordRequest recordRequest = new PutRecordRequest();
         recordRequest.setStreamName(streamName);
+        // --------------DECIDE ON PARTITION STRATEGY-------------------
+        recordRequest.setPartitionKey(message.getMessage());
 
-        // convert PublishMessage to byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (ObjectOutput out = new ObjectOutputStream(bos)) {
-            out.writeObject(message);                                         // Alternatively use JACKSON library
-            out.flush();                                                      // ObjectMapper JSON = new ObjectMapper();
-            recordRequest.setData(ByteBuffer.wrap(bos.toByteArray()));        // recordRequest.setData(JSON.writeValueAsBytes(message))
+        // convert PublishMessage to byte array and set it as a kinesis message
+        try {
+            recordRequest.setData(messageToByteArrayConverter(message));        // recordRequest.setData(JSON.writeValueAsBytes(message))
+            System.out.println("Successfuly published message to Kinesis YAY ");
         } catch (Exception e) {
-            LOG.error("Something went wrong serializing the message " + message.getMessage());
-        } finally {
-            try {
-                bos.close();
-            } catch (Exception e) {
-                LOG.error("Something went wrong closing the ByteArrayOutputStream");
-            }
+            LOG.error("Something went wrong publishing the message " + message.getMessage());
         }
 
         // Push to kinesis
@@ -64,16 +53,30 @@ public class KinesisMessagePersister implements MessagePersister<PublishedMessag
         }
     }
 
-    public boolean validateMessage(PublishedMessage message) {
-        for (Field field : getClass().getDeclaredFields()) {
+
+/*    public boolean validateMessage(PublishedMessage message) {
+        try {
+            return Stream.of(message)
+                    .allMatch(Objects::nonNull);
+        } catch (Exception e) {
+            return false;
+        }
+    }*/
+
+    public ByteBuffer messageToByteArrayConverter(PublishedMessage message) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ObjectOutput out = new ObjectOutputStream(bos)) {
+            out.writeObject(message);                                         // Alternatively use JACKSON library
+            out.flush();                                                      // ObjectMapper JSON = new ObjectMapper();
+        } catch (Exception e) {
+            LOG.error("Something went wrong serializing the message: " + message.getMessage());
+        } finally {
             try {
-                if (field.get(this) == null) {
-                    return false;
-                }
+                bos.close();
             } catch (Exception e) {
-                LOG.error("Message has null field: " + field.getName());
+                LOG.error("Something went wrong closing the ByteArrayOutputStream");
             }
         }
-        return true;
+        return ByteBuffer.wrap(bos.toByteArray());
     }
 }

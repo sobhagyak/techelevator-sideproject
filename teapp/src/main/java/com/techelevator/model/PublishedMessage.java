@@ -1,21 +1,23 @@
 package com.techelevator.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
-public class PublishedMessage {
+public class PublishedMessage implements Serializable {
 
     private String resource;
     private String message;
     private Long messsageId;
     private String username; // user screen name in twitter
     private String hashtag;
-    private Date postDate;
+    private LocalDate postDate;
     private int favoriteCount;
     private int retweetCount;
 
     public PublishedMessage(String resource, String message, Long messsageId, String username,
-                            String hashtag, Date postDate, int favoriteCount, int retweetCount) {
+                            String hashtag, LocalDate postDate, int favoriteCount, int retweetCount) {
         this.resource = resource;
         this.message = message;
         this.messsageId = messsageId;
@@ -46,7 +48,7 @@ public class PublishedMessage {
         return hashtag;
     }
 
-    public Date getPostDate() {
+    public LocalDate getPostDate() {
         return postDate;
     }
 

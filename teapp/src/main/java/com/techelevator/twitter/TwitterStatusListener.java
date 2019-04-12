@@ -5,16 +5,19 @@ import com.techelevator.dao.MessagePersister;
 import com.techelevator.model.PublishedMessage;
 import twitter4j.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 public class TwitterStatusListener implements StatusListener {
 
     private static final String RESOURCE = "TWITTER";
-/*
+
     private MessagePersister messagePersister;
 
     public TwitterStatusListener(MessagePersister messagePersister) {
         this.messagePersister = messagePersister;
     }
-*/
+
 
     @Override
     public void onStatus(Status status) {
@@ -24,10 +27,11 @@ public class TwitterStatusListener implements StatusListener {
 
         PublishedMessage message = new PublishedMessage(
                 RESOURCE, status.getText(), status.getId(), status.getUser().getScreenName(),
-                hashtags, status.getCreatedAt(), status.getFavoriteCount(), status.getRetweetCount());
+                hashtags, status.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                status.getFavoriteCount(), status.getRetweetCount());
 
         System.out.println(message.toString());
-        //messagePersister.persist(message);
+        messagePersister.persist(message);
     }
 
     @Override
